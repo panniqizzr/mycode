@@ -6,7 +6,7 @@ import java.sql.SQLException;
 public class Sign_UI {
     static JFrame f = new JFrame();//点击登陆后弹出界面的界面实例
     static DbProcess2 dbprocess = new DbProcess2();//数据库程序实例
-    static JTextField usernameField = new JTextField();
+    static JTextField usernameField = new JTextField();//为了使getusername函数可以获取到用户名，所以将此文本框的声明放在界面函数之外
     public static void signUI(){
         //窗体类
         JFrame signui = new JFrame();
@@ -82,7 +82,7 @@ public class Sign_UI {
                         JOptionPane.showMessageDialog(f, "注册成功");
                     }
                     else
-                        JOptionPane.showMessageDialog(f, "注册失败");
+                        JOptionPane.showMessageDialog(f, "该用户名已被注册，请重新输入");
                 }
             }
         });
@@ -92,7 +92,7 @@ public class Sign_UI {
         signui.setVisible(true);   //设置可见，放在代码最后一句
     }
 
-    private static void sign(JTextField usernameField, JPasswordField passwordField,String table,boolean change_ui) {
+    private static void sign(JTextField usernameField, JPasswordField passwordField,String table,boolean bool) {
         String user = usernameField.getText().trim();
         String pass = String.valueOf(passwordField.getPassword());
         if (usernameField.getText().equals(""))
@@ -102,10 +102,7 @@ public class Sign_UI {
         else {
             if (sign_in(user, pass,table)) {
                 JOptionPane.showMessageDialog(f, "登录成功");
-                if(change_ui) {
-                    Success sc = new Success();//新的界面（跟旧的差不多后面有代码）
-                    sc.showUI();
-                }
+                if(bool) Doctor_UI.DoctorUI();//bool为ture时，跳转到医生页面，反则跳转用户页面
                 else Reserve_UI.ReserveUI();
             }
             else

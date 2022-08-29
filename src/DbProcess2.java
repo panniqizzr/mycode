@@ -53,7 +53,7 @@ public class DbProcess2 {
     }
 
 
-    /*public void disconnect(){
+    public void disconnect(){
         try{
             if(con != null){
                 System.out.println("数据库断开成功");
@@ -64,5 +64,5 @@ public class DbProcess2 {
         catch(Exception e){
             e.printStackTrace();
         }
-    }*/
+    }
 }

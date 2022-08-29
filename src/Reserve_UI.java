@@ -92,6 +92,7 @@ public class Reserve_UI {
                         dbprocess.sta.execute(sql1);//execute返回值为true时，表示执行的是查询语句，可以通过getResultSet方法获取结果；返回值为false时，执行的是更新语句或DDL语句
                         JOptionPane.showMessageDialog(f, "预约成功");
                     }
+                    dbprocess.disconnect();
                 } catch (SQLException ex) {
                     System.err.println(ex.getMessage());
                 }
@@ -112,6 +113,7 @@ public class Reserve_UI {
                 data.setState(result.getString("state"));
                 list.add(data);
             }
+            dbprocess.disconnect();
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
         }
@@ -135,14 +137,14 @@ public class Reserve_UI {
         reserveui.setVisible(true);
     }
 
-    private static void combos(JFrame reserveui, JTextField jTextField5, String[] listData2) {
-        final JComboBox<String> comboBox2 = new JComboBox<>(listData2);
+    private static void combos(JFrame reserveui, JTextField jTextField, String[] listData) {
+        final JComboBox<String> comboBox2 = new JComboBox<>(listData);
         comboBox2.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 System.out.println("选中: " + comboBox2.getSelectedItem());
-                jTextField5.setText(Objects.requireNonNull(comboBox2.getSelectedItem()).toString());
+                jTextField.setText(Objects.requireNonNull(comboBox2.getSelectedItem()).toString());
             }
         });
         reserveui.add(comboBox2);
-    }
+    }//选项框函数
 }
