@@ -59,7 +59,7 @@ public class Reserve_UI {
         JTextField jTextField6 = new JTextField(8);
         reserveui.add(jTextField6);
 
-        String[] listData3 = new String[]{"", "赵医生", "李医生", "王医生"};
+        String[] listData3 = new String[]{"", "赵医生", "李医生", "王医生","孙医生"};
         combos(reserveui, jTextField6, listData3);
 
         JButton jButton1 = new JButton("预约");
@@ -78,18 +78,21 @@ public class Reserve_UI {
                     && !doctor.isEmpty()) {
                 String sql1 = "insert into reserve (username,name,sex,phone,time,doctor) values(";
                 sql1 = sql1 + "'" + Sign_UI.getusername() + "','" + name + "','" + sex + "','" + phone + "','" + time + "','" + doctor + "')";
-                String
-                        sql2 = "update time set state='已预约' where doctor = '" +doctor+"' and time = '" +time+"' and state = '未预约'";
+                String sql2 = "select state from time where doctor = '" +doctor+"' and time = '" +time+"' and state = '已预约'";
+                String sql3 = "update time set state='已预约' where doctor = '" +doctor+"' and time = '" +time+"' and state = '未预约'";
                 System.out.println(sql1);
                 try {
                     dbprocess.connect();
                     dbprocess.sta = dbprocess.con.createStatement();
-                    int q = dbprocess.sta.executeUpdate(sql2);//返回受到影响的行数
-                    if(q==0) {
+                    dbprocess.sta.execute(sql2);
+                     ResultSet result = dbprocess.sta.getResultSet();
+
+                    if(result.next()) {
                         JOptionPane.showMessageDialog(f, "医生此时间已被预约");
                     }
                     else{
                         dbprocess.sta.execute(sql1);//execute返回值为true时，表示执行的是查询语句，可以通过getResultSet方法获取结果；返回值为false时，执行的是更新语句或DDL语句
+                        dbprocess.sta.executeUpdate(sql3);//返回受到影响的行数
                         JOptionPane.showMessageDialog(f, "预约成功");
                     }
                     dbprocess.disconnect();
@@ -99,13 +102,39 @@ public class Reserve_UI {
             } else JOptionPane.showMessageDialog(f, "填写内容不全");
         });
 
+        //将数据库中的数据通过jtable给用户显示
+        LinkedList<Showdata> list = getdata();
+        String[] index = {"doctor", "time", "state"};
+        Object[][] data_in_table = new Object[list.size()][index.length];
+        for (int i = 0; i <list.size();i++) {
+            Showdata s = list.get(i);
+            data_in_table[i][0] = s.getDoctor();
+            data_in_table[i][1] = s.getTime();
+            data_in_table[i][2] = s.getState();
+        }
+        JTable table = new JTable(data_in_table,index);
+        table.setRowHeight(30);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        reserveui.add(table);
+
+        JScrollPane jScrollPane = new JScrollPane();
+        jScrollPane.setViewportView(table);
+        reserveui.add(jScrollPane);
+
+        JButton jButton2 = new JButton("刷新");
+        reserveui.add(jButton2);
+        jButton2.addActionListener(e -> table.updateUI());
+
+        reserveui.setVisible(true);
+    }
+
+    private static LinkedList<Showdata> getdata() {
         String sql3 = "select doctor,time,state from time";
-        LinkedList<Showdata> list = null;
+        LinkedList<Showdata> list = new LinkedList<>();
         try {
             dbprocess.connect();
             dbprocess.sta = dbprocess.con.createStatement();
             ResultSet result = dbprocess.sta.executeQuery(sql3);//execute返回值为true时，表示执行的是查询语句，可以通过getResultSet方法获取结果；返回值为false时，执行的是更新语句或DDL语句
-            list = new LinkedList<>();
             while (result.next()) {
                 Showdata data = new Showdata();
                 data.setDoctor(result.getString("doctor"));
@@ -117,24 +146,7 @@ public class Reserve_UI {
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
         }
-        String[] index = {"doctor", "time", "state"};
-        assert list != null;
-        Object[][] data = new Object[list.size()][index.length];
-        for (int i = 0; i <list.size();i++) {
-            Showdata s = list.get(i);
-            data[i][0] = s.getDoctor();
-            data[i][1] = s.getTime();
-            data[i][2] = s.getState();
-        }
-        JTable table = new JTable(data,index);
-        table.setRowHeight(30);
-        reserveui.add(table);
-
-        JScrollPane jScrollPane = new JScrollPane();
-        jScrollPane.setViewportView(table);
-        reserveui.add(jScrollPane);
-
-        reserveui.setVisible(true);
+        return list;
     }
 
     private static void combos(JFrame reserveui, JTextField jTextField, String[] listData) {
