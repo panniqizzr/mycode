@@ -7,14 +7,17 @@ public class Doctor_UI {
 
     public static void DoctorUI() {
         JFrame doctorui = new JFrame();
-        doctorui.setTitle("心理预约系统");
+        doctorui.setTitle("心理咨询预约系统");
         doctorui.setSize(600, 500);
         doctorui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         doctorui.setLocationRelativeTo(null);
 
-
-
         FlowLayout flow = new FlowLayout();
         doctorui.setLayout(flow);
+
+
+
+
+        doctorui.setVisible(true);
     }
 }

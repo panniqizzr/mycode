@@ -11,7 +11,7 @@ public class Sign_UI {
         //窗体类
         JFrame signui = new JFrame();
         //窗体名称
-        signui.setTitle("心理预约系统登录界面");
+        signui.setTitle("心理咨询预约系统");
         //窗体大小（具体值跟电脑显示器的像素有关，可调整到合适大小）
         signui.setSize(400, 500);
         //设置退出进程的方法

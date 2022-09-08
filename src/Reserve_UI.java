@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.sql.ResultSet;
@@ -11,7 +12,7 @@ public class Reserve_UI {
     static DbProcess2 dbprocess = new DbProcess2();//数据库程序实例
     public static void ReserveUI() {
         JFrame reserveui = new JFrame();
-        reserveui.setTitle("心理预约系统");
+        reserveui.setTitle("心理咨询预约系统");
         reserveui.setSize(600, 500);
         reserveui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         reserveui.setLocationRelativeTo(null);
@@ -103,16 +104,10 @@ public class Reserve_UI {
         });
 
         //将数据库中的数据通过jtable给用户显示
-        LinkedList<Showdata> list = getdata();
         String[] index = {"doctor", "time", "state"};
-        Object[][] data_in_table = new Object[list.size()][index.length];
-        for (int i = 0; i <list.size();i++) {
-            Showdata s = list.get(i);
-            data_in_table[i][0] = s.getDoctor();
-            data_in_table[i][1] = s.getTime();
-            data_in_table[i][2] = s.getState();
-        }
-        JTable table = new JTable(data_in_table,index);
+        Object[][] data_in_table = getObjects(index);
+        DefaultTableModel tModel = new DefaultTableModel(data_in_table,index);
+        JTable table = new JTable(tModel);
         table.setRowHeight(30);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         reserveui.add(table);
@@ -122,13 +117,17 @@ public class Reserve_UI {
         reserveui.add(jScrollPane);
 
         JButton jButton2 = new JButton("刷新");
+
         reserveui.add(jButton2);
-        jButton2.addActionListener(e -> table.updateUI());
+        jButton2.addActionListener(e -> {
+            Object[][] data_in_table2 = getObjects(index);
+            tModel.setDataVector(data_in_table2,index);
+        });
 
         reserveui.setVisible(true);
     }
 
-    private static LinkedList<Showdata> getdata() {
+    private static Object[][] getObjects(String[] index) {
         String sql3 = "select doctor,time,state from time";
         LinkedList<Showdata> list = new LinkedList<>();
         try {
@@ -146,8 +145,16 @@ public class Reserve_UI {
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
         }
-        return list;
+        Object[][] data_in_table = new Object[list.size()][index.length];
+        for (int i = 0; i <list.size();i++) {
+            Showdata s = list.get(i);
+            data_in_table[i][0] = s.getDoctor();
+            data_in_table[i][1] = s.getTime();
+            data_in_table[i][2] = s.getState();
+        }
+        return data_in_table;
     }
+
 
     private static void combos(JFrame reserveui, JTextField jTextField, String[] listData) {
         final JComboBox<String> comboBox2 = new JComboBox<>(listData);
