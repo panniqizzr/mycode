@@ -45,7 +45,7 @@ public class Doctor_UI {
                     dbprocess.connect();
                     dbprocess.sta = dbprocess.con.createStatement();
                     int a = dbprocess.sta.executeUpdate(sql1);
-                    if(a==0) JOptionPane.showMessageDialog(f, "预约号填写错误或此病人已被诊断");//executeUpdate返回的是改变行数，如果是0的话只可能是没有这个预约号或已被诊断
+                    if(a==0) JOptionPane.showMessageDialog(f, "预约号填写错误");//executeUpdate返回的是改变行数，如果是0的话只可能是没有这个预约号或已被诊断
                     else JOptionPane.showMessageDialog(f, "诊断完成");
                 } catch (SQLException ex) {
                     System.err.println(ex.getMessage());
@@ -80,6 +80,7 @@ public class Doctor_UI {
 
     private static Object[][] getObjects(String[] index) {
         String sql2 = "select num,name,sex,phone,state,result from reserve where doctor ='" + Sign_UI.getusername() +"'";
+        System.out.println(sql2);
         LinkedList<Showdata> list = new LinkedList<>();
         try {
             dbprocess.connect();
