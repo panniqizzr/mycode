@@ -31,43 +31,44 @@ public class Sign_UI {
         //设置大小
         jla.setPreferredSize(dm0);//应用大小到相应组件
         signui.add(jla);//将组件加到窗体上
-        //文本框
+
         JLabel username = new JLabel("用户名");
         username.setFont(new Font(null,Font.PLAIN,15));
         signui.add(username);
-        //(除了JFrame)其它所有组件设置大小都是该方法
-        Dimension dm = new Dimension(300, 30);
+        //文本框
 
+        Dimension dm = new Dimension(300, 30);
+        //(除了JFrame)其它所有组件设置大小都是该方法
         usernameField.setPreferredSize(dm);
         signui.add(usernameField);
 
         JLabel password = new JLabel("密码");
         password.setFont(new Font(null,Font.PLAIN,15));
         signui.add(password);
-        //密码框
+
         JPasswordField passwordField = new JPasswordField();
         passwordField.setPreferredSize(dm);
         signui.add(passwordField);
-        //医生登录按钮
+        //复选框
+
+        //按钮
         JButton jbu1 = new JButton("医生登陆");
         String table1 = "doctor_sign";
-        boolean bool = true;//进入函数中方便判断跳转到哪个页面
+        boolean bool = true;
         signui.add(jbu1);   //给窗体添加一个按钮对象
-        jbu1.addActionListener(e -> {//这是一个lambda函数（匿名函数）
+        jbu1.addActionListener(e -> {
             if(e.getActionCommand().equals("医生登陆")) {
-                sign(usernameField, passwordField,table1,bool);//sign函数判断用户名密码是否正确
+                sign(usernameField, passwordField,table1,bool);
             }
         });
-        //用户登录按钮
         JButton jbu2 = new JButton("用户登录");
         String table2 = "users_sign";
-        signui.add(jbu2);
+        signui.add(jbu2);   //给窗体添加一个按钮对象
         jbu2.addActionListener(e -> {
             if(e.getActionCommand().equals("用户登录")) {
                 sign(usernameField, passwordField,table2,!bool);
             }
         });
-        //用户注册按钮
         JButton jbu3 = new JButton("用户注册");
         signui.add(jbu3);   //给窗体添加一个按钮对象
         jbu3.addActionListener(e -> {
@@ -77,7 +78,7 @@ public class Sign_UI {
                 else if (String.valueOf(passwordField.getPassword()).equals(""))
                     JOptionPane.showMessageDialog(f, "密码不能为空");
                 else {
-                    if (register(usernameField.getText(), String.valueOf(passwordField.getPassword()),table2)) {//register函数将新的用户录入数据库，返回值为1时表示没有用户名冲突
+                    if (register(usernameField.getText(), String.valueOf(passwordField.getPassword()),table2)) {
                         JOptionPane.showMessageDialog(f, "注册成功");
                     }
                     else
@@ -90,7 +91,7 @@ public class Sign_UI {
         signui.add(note);
         signui.setVisible(true);   //设置可见，放在代码最后一句
     }
-    //sign函数用于判断用户名及密码是否正确然后完成页面跳转
+
     private static void sign(JTextField usernameField, JPasswordField passwordField,String table,boolean bool) {
         String user = usernameField.getText().trim();
         String pass = String.valueOf(passwordField.getPassword());
@@ -99,41 +100,44 @@ public class Sign_UI {
         else if (String.valueOf(passwordField.getPassword()).equals(""))
             JOptionPane.showMessageDialog(f, "密码不能为空");
         else {
-            String sql ="select * from " + table + " where username =  '" + user +"' and password = '" + pass+"'";
-            System.out.println(sql);
-            try {
-                dbprocess.connect();
-                dbprocess.sta = dbprocess.con.createStatement();
-                ResultSet RS1 = dbprocess.sta.executeQuery(sql);
-                if (RS1.next()) {
-                    JOptionPane.showMessageDialog(f, "登录成功");
-                    if(bool) Doctor_UI.DoctorUI();//bool为ture时，跳转到医生页面，反则跳转用户页面
-                    else Reserve_UI.ReserveUI();
-                }
-                else
-                    JOptionPane.showMessageDialog(f, "账号或密码错误");
+            if (sign_in(user, pass,table)) {
+                JOptionPane.showMessageDialog(f, "登录成功");
+                if(bool) Doctor_UI.DoctorUI();//bool为ture时，跳转到医生页面，反则跳转用户页面
+                else Reserve_UI.ReserveUI();
             }
-            catch(SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
+            else
+                JOptionPane.showMessageDialog(f, "账号或密码错误");
         }
     }
 
-    private static boolean register(String username, String password, String table) {
+    private static boolean sign_in(String username, String password, String table) {
 
-        String sql ="insert into " + table + "(username, password) VALUES ( '" + username + "' , '" + password +"')";
-        System.out.println(sql);
+        String sql ="select * from " + table + " where username =  '" + username +"' and password = '" + password+"'";
         try {
             dbprocess.connect();
             dbprocess.sta = dbprocess.con.createStatement();
-            return !dbprocess.sta.execute(sql);//execute返回值为true时，表示执行的是查询语句，可以通过getResultSet方法获取结果；返回值为false时，执行的是更新语句或DDL语句或插入语句
+            ResultSet RS1 = dbprocess.sta.executeQuery(sql);
+            return RS1.next();
         }
         catch(SQLException ex) {
             System.err.println(ex.getMessage());
         }
         return false;
     }
-    //getusername用于获取用户名，在后面会使用到
+    private static boolean register(String username, String password, String table) {
+
+        String sql ="insert into " + table + "(username, password) VALUES ( '" + username + "' , '" + password +"')";
+        try {
+            dbprocess.connect();
+            dbprocess.sta = dbprocess.con.createStatement();
+            return !dbprocess.sta.execute(sql);//execute返回值为true时，表示执行的是查询语句，可以通过getResultSet方法获取结果；返回值为false时，执行的是更新语句或DDL语句
+        }
+        catch(SQLException ex) {
+            System.err.println(ex.getMessage());
+        }
+        return false;
+    }
+    
     public static String getusername() {
         return usernameField.getText();
     }
