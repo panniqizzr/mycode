@@ -13,7 +13,7 @@ public class Reserve_UI {
     public static void ReserveUI() {
         JFrame reserveui = new JFrame();
         reserveui.setTitle("心理咨询预约系统");
-        reserveui.setSize(600, 500);
+        reserveui.setSize(700, 500);
         reserveui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         reserveui.setLocationRelativeTo(null);
 
@@ -82,6 +82,8 @@ public class Reserve_UI {
                 String sql2 = "select state from time where doctor = '" +doctor+"' and time = '" +time+"' and state = '已预约'";
                 String sql3 = "update time set state='已预约' where doctor = '" +doctor+"' and time = '" +time+"' and state = '未预约'";
                 System.out.println(sql1);
+                System.out.println(sql2);
+                System.out.println(sql3);
                 try {
                     dbprocess.connect();
                     dbprocess.sta = dbprocess.con.createStatement();
@@ -103,10 +105,31 @@ public class Reserve_UI {
             } else JOptionPane.showMessageDialog(f, "填写内容不全");
         });
 
+        JButton jButton2 = new JButton("取消预约");
+        reserveui.add(jButton2);
+        jButton2.addActionListener(e -> {
+            String sql4 = "delete from reserve where username = '" + Sign_UI.getusername() + "'";
+            String sql5 = "update time a INNER JOIN reserve b on (a.doctor = b.doctor and a.time = b.time) set a.state='未预约' where username ='" + Sign_UI.getusername() + "'";
+            try {
+                dbprocess.connect();
+                dbprocess.sta = dbprocess.con.createStatement();
+                dbprocess.sta.executeUpdate(sql5);
+                int a = dbprocess.sta.executeUpdate(sql4);
+                if(a==0) JOptionPane.showMessageDialog(f, "您还未预约");//executeUpdate返回的是改变行数，如果是0的话只可能是没有这个预约号或已被诊断
+                else {
+                    JOptionPane.showMessageDialog(f, "取消预约成功");
+
+                }
+
+            } catch (SQLException ex) {
+                System.err.println(ex.getMessage());
+            }
+        });
+
         //将数据库中的数据通过jtable给用户显示
-        String[] index = {"doctor", "time", "state"};
-        Object[][] data_in_table = getObjects(index);
-        DefaultTableModel tModel = new DefaultTableModel(data_in_table,index);
+        String[] index = {"医生", "预约时间", "预约状态"};
+        Object[][] table_data_time = getObjects(index);
+        DefaultTableModel tModel = new DefaultTableModel(table_data_time,index);
         JTable table = new JTable(tModel);
         table.setRowHeight(30);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -116,10 +139,10 @@ public class Reserve_UI {
         jScrollPane.setViewportView(table);
         reserveui.add(jScrollPane);
 
-        JButton jButton2 = new JButton("刷新");
+        JButton jButton3 = new JButton("刷新");
 
-        reserveui.add(jButton2);
-        jButton2.addActionListener(e -> {
+        reserveui.add(jButton3);
+        jButton3.addActionListener(e -> {
             Object[][] data_in_table2 = getObjects(index);
             tModel.setDataVector(data_in_table2,index);
         });
@@ -145,14 +168,14 @@ public class Reserve_UI {
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
         }
-        Object[][] data_in_table = new Object[list.size()][index.length];
+        Object[][] table_data_time = new Object[list.size()][index.length];
         for (int i = 0; i <list.size();i++) {
             Showdata s = list.get(i);
-            data_in_table[i][0] = s.getDoctor();
-            data_in_table[i][1] = s.getTime();
-            data_in_table[i][2] = s.getState();
+            table_data_time[i][0] = s.getDoctor();
+            table_data_time[i][1] = s.getTime();
+            table_data_time[i][2] = s.getState();
         }
-        return data_in_table;
+        return table_data_time;
     }
 
 
