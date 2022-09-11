@@ -27,12 +27,14 @@ public class Reserve_UI {
         JLabel label2 = new JLabel("姓名");
         label2.setFont(new Font(null, Font.PLAIN, 20));
         reserveui.add(label2);
+
         JTextField jTextField2 = new JTextField(8);
         reserveui.add(jTextField2);
 
         JLabel label3 = new JLabel("性别");
         label3.setFont(new Font(null, Font.PLAIN, 20));
         reserveui.add(label3);
+
         JTextField jTextField3 = new JTextField(8);
         reserveui.add(jTextField3);
 
@@ -42,12 +44,14 @@ public class Reserve_UI {
         JLabel label4 = new JLabel("电话");
         label4.setFont(new Font(null, Font.PLAIN, 20));
         reserveui.add(label4);
+
         JTextField jTextField4 = new JTextField(8);
         reserveui.add(jTextField4);
 
         JLabel label5 = new JLabel("预约时间");
         label5.setFont(new Font(null, Font.PLAIN, 20));
         reserveui.add(label5);
+
         JTextField jTextField5 = new JTextField(8);
         reserveui.add(jTextField5);
 
@@ -60,13 +64,13 @@ public class Reserve_UI {
         JTextField jTextField6 = new JTextField(8);
         reserveui.add(jTextField6);
 
-        String[] listData3 = new String[]{"", "赵医生", "李医生", "王医生","孙医生"};
+        String[] listData3 = new String[]{"", "赵医生", "王医生", "李医生","孙医生"};
         combos(reserveui, jTextField6, listData3);
 
         JButton jButton1 = new JButton("预约");
         reserveui.add(jButton1);
         jButton1.addActionListener(e -> {
-            String name = jTextField2.getText().trim();
+            String name = jTextField2.getText().trim();//将用户输入文本框中的文字转换为字符串
             String sex = jTextField3.getText().trim();
             String phone = jTextField4.getText().trim();
             String time = jTextField5.getText().trim();
@@ -77,9 +81,12 @@ public class Reserve_UI {
                     && !phone.isEmpty()
                     && !time.isEmpty()
                     && !doctor.isEmpty()) {
+                //sql1将预约信息插入到reserve表中
                 String sql1 = "insert into reserve (username,name,sex,phone,time,doctor) values(";
                 sql1 = sql1 + "'" + Sign_UI.getusername() + "','" + name + "','" + sex + "','" + phone + "','" + time + "','" + doctor + "')";
+                //sql2查询此医生时间是否被预约
                 String sql2 = "select state from time where doctor = '" +doctor+"' and time = '" +time+"' and state = '已预约'";
+                //sql3将time表中当前医生的当前时间段预约状态改为已预约
                 String sql3 = "update time set state='已预约' where doctor = '" +doctor+"' and time = '" +time+"' and state = '未预约'";
                 System.out.println(sql1);
                 System.out.println(sql2);
@@ -108,17 +115,20 @@ public class Reserve_UI {
         JButton jButton2 = new JButton("取消预约");
         reserveui.add(jButton2);
         jButton2.addActionListener(e -> {
-            String sql4 = "delete from reserve where username = '" + Sign_UI.getusername() + "'";
-            String sql5 = "update time a INNER JOIN reserve b on (a.doctor = b.doctor and a.time = b.time) set a.state='未预约' where username ='" + Sign_UI.getusername() + "'";
+            //sql4将将time表中当前医生的当前时间段预约状态改为未预约
+            String sql4 = "update time a INNER JOIN reserve b on (a.doctor = b.doctor and a.time = b.time) set a.state='未预约' where username ='" + Sign_UI.getusername() + "'";
+            //sql5删除此次预约
+            String sql5 = "delete from reserve where username = '" + Sign_UI.getusername() + "'";
+            System.out.println(sql4);
+            System.out.println(sql5);
             try {
                 dbprocess.connect();
                 dbprocess.sta = dbprocess.con.createStatement();
-                dbprocess.sta.executeUpdate(sql5);
-                int a = dbprocess.sta.executeUpdate(sql4);
-                if(a==0) JOptionPane.showMessageDialog(f, "您还未预约");//executeUpdate返回的是改变行数，如果是0的话只可能是没有这个预约号或已被诊断
+                int a = dbprocess.sta.executeUpdate(sql4);//返回值为改变行数，改变行数为0表示没有找到此预约信息
+                if(a==0) JOptionPane.showMessageDialog(f, "您还未预约");
                 else {
+                    dbprocess.sta.executeUpdate(sql5);//删除此预约
                     JOptionPane.showMessageDialog(f, "取消预约成功");
-
                 }
 
             } catch (SQLException ex) {
@@ -128,19 +138,18 @@ public class Reserve_UI {
 
         //将数据库中的数据通过jtable给用户显示
         String[] index = {"医生", "预约时间", "预约状态"};
-        Object[][] table_data_time = getObjects(index);
-        DefaultTableModel tModel = new DefaultTableModel(table_data_time,index);
-        JTable table = new JTable(tModel);
+        Object[][] table_data_time = getObjects(index);//获取数据库内容
+        DefaultTableModel tModel = new DefaultTableModel(table_data_time,index);//Jtable的默认模型
+        JTable table = new JTable(tModel);//使用模型创建一个table对象
         table.setRowHeight(30);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         reserveui.add(table);
-
+        //竖直滚动条
         JScrollPane jScrollPane = new JScrollPane();
         jScrollPane.setViewportView(table);
         reserveui.add(jScrollPane);
-
+        //将模型的Object[][]（里面含有数据库最新数据）重新创建并显示
         JButton jButton3 = new JButton("刷新");
-
         reserveui.add(jButton3);
         jButton3.addActionListener(e -> {
             Object[][] data_in_table2 = getObjects(index);
@@ -149,14 +158,15 @@ public class Reserve_UI {
 
         reserveui.setVisible(true);
     }
-
+    //获取数据库数据
     private static Object[][] getObjects(String[] index) {
-        String sql3 = "select doctor,time,state from time";
-        LinkedList<Showdata> list = new LinkedList<>();
+        String sql = "select doctor,time,state from time";
+        System.out.println(sql);
+        LinkedList<Showdata> list = new LinkedList<>();//双向链表
         try {
             dbprocess.connect();
             dbprocess.sta = dbprocess.con.createStatement();
-            ResultSet result = dbprocess.sta.executeQuery(sql3);//execute返回值为true时，表示执行的是查询语句，可以通过getResultSet方法获取结果；返回值为false时，执行的是更新语句或DDL语句
+            ResultSet result = dbprocess.sta.executeQuery(sql);//execute返回值为true时，表示执行的是查询语句，可以通过getResultSet方法获取结果；返回值为false时，执行的是更新语句或DDL语句
             while (result.next()) {
                 Showdata data = new Showdata();
                 data.setDoctor(result.getString("doctor"));
@@ -177,8 +187,7 @@ public class Reserve_UI {
         }
         return table_data_time;
     }
-
-
+    //选项框函数
     private static void combos(JFrame reserveui, JTextField jTextField, String[] listData) {
         final JComboBox<String> comboBox2 = new JComboBox<>(listData);
         comboBox2.addItemListener(e -> {
@@ -188,5 +197,5 @@ public class Reserve_UI {
             }
         });
         reserveui.add(comboBox2);
-    }//选项框函数
+    }
 }
