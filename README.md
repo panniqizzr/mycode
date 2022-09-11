@@ -1,4 +1,27 @@
-# 数据库表
+# 心理咨询预约系统
+
+## 一、所需环境配置
+
+1.下载IDEA
+
+2、下载MySQL[mysql8.0.25安装配置教程(windows 64位)最详细_聚精会神搞学习的博客-CSDN博客_mysql安装教程8.0.25](https://blog.csdn.net/weixin_43579015/article/details/117228159?ops_request_misc=%7B%22request%5Fid%22%3A%22166286237716782395352317%22%2C%22scm%22%3A%2220140713.130102334..%22%7D&request_id=166286237716782395352317&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-2-117228159-null-null.142^v47^pc_rank_34_ecpm25,201^v3^add_ask&utm_term=mysql安装配置教程&spm=1018.2226.3001.4187)
+
+3、下载jdbc[ IDEA使用JDBC连接MySQL数据库详细教程_末尾带空格的bearBaby的博客-CSDN博客](https://blog.csdn.net/qq_36172505/article/details/84102468?ops_request_misc=%7B%22request%5Fid%22%3A%22166282023616782248567094%22%2C%22scm%22%3A%2220140713.130102334..%22%7D&request_id=166282023616782248567094&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-2-84102468-null-null.142^v47^pc_rank_34_ecpm25,201^v3^add_ask&utm_term=idea连接mysql数据库&spm=1018.2226.3001.4187)
+
+4、idea连接数据库[idea：使用idea连接mysql数据库_m0_67401920的博客-CSDN博客_用idea连接mysql](https://blog.csdn.net/m0_67401920/article/details/126384835?ops_request_misc=&request_id=&biz_id=102&utm_term=idea连接mysql数据库&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-0-126384835.142^v47^pc_rank_34_ecpm25,201^v3^add_ask&spm=1018.2226.3001.4187)
+
+5、这个是项目里DbProcess2的代码，注意注释，改成自己的
+
+```Java
+public class DbProcess2 {
+    public Connection con = null;public Statement sta=null;
+    static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
+    //注意！：下行3306后面的q1为我建立的数据库名，要改成自己建立的数据库名！！！
+    static final String DB_URL = "jdbc:mysql://localhost:3306/xl?&useSSL=false&serverTimezone=UTC";
+    //数据库账号密码，也要改为自己的
+    static final String USER = "root";
+    static final String PASS = "201749zao";
+```
 
 ```sql
 create table doctor_sign
