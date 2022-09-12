@@ -85,9 +85,14 @@ public class Sign_UI {
                 }
             }
         });
-        JLabel note = new JLabel("注意:注册请输入用户名与密码后点击用户注册");
+        JLabel note1 = new JLabel("注意:1.注册请输入用户名与密码后点击用户注册");
         username.setFont(new Font(null,Font.PLAIN,15));
-        signui.add(note);
+        signui.add(note1);
+
+        JLabel note2 = new JLabel("2.一个用户只能预约一个时间              ");
+        username.setFont(new Font(null,Font.PLAIN,15));
+        signui.add(note2);
+
         signui.setVisible(true);   //设置可见，放在代码最后一句
     }
     //sign函数用于判断用户名及密码是否正确然后完成页面跳转

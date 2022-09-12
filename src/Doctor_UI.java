@@ -19,6 +19,10 @@ public class Doctor_UI {
         FlowLayout flow = new FlowLayout();
         doctorui.setLayout(flow);
 
+        JLabel label = new JLabel("医生:" + Sign_UI.getusername());
+        label.setFont(new Font(null, Font.PLAIN, 20));
+        doctorui.add(label);
+
         JLabel label1 = new JLabel("预约号:");
         label1.setFont(new Font(null, Font.PLAIN, 20));
         doctorui.add(label1);
