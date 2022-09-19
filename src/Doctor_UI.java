@@ -44,6 +44,8 @@ public class Doctor_UI {
             String result = jTextField2.getText().trim();
             if (e.getActionCommand().equals("诊断完成") && !num.isEmpty() && !result.isEmpty()){
                 String sql1 = "update reserve set result = '" + result +"', state = '已诊断' where num = '" + num + "'";
+                //TODO 另一种使用format的写法，可读性高，运行结果相同
+                // String sql = String.format("update reserve set result = '%s' , state = '已诊断' where num = '%s'",result,num);
                 System.out.println(sql1);
                 try {
                     dbprocess.connect();
